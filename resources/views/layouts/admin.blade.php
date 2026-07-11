@@ -46,6 +46,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+    <a href="{{ route('admin.subscription.show') }}" class="nav-link {{ request()->routeIs('admin.subscription.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-credit-card"></i><p>Subscription</p>
+    </a>
+</li>
+                        <li class="nav-item">
                             <a href="{{ route('admin.categories.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-list"></i><p>Categories</p>
                             </a>
@@ -66,6 +71,11 @@
                                 <i class="nav-icon fas fa-store"></i><p>All Restaurants</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+    <a href="{{ route('superadmin.payments') }}" class="nav-link {{ request()->routeIs('superadmin.payments') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-money-bill-wave"></i><p>Payments</p>
+    </a>
+</li>
                     @endif
                 </ul>
             </nav>

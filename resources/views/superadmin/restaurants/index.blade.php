@@ -14,6 +14,7 @@
                     <td>{{ $r->slug }}</td>
                     <td>{{ $r->is_active ? 'Active' : 'Inactive' }}</td>
                     <td>
+                        <a href="{{ route('superadmin.restaurants.show', $r->_id) }}" class="btn btn-sm btn-info">View</a>
                         <form method="POST" action="{{ route('superadmin.restaurants.toggle', $r->_id) }}">
                             @csrf
                             <button class="btn btn-sm btn-warning">Toggle</button>

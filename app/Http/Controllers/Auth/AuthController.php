@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\Recaptcha;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -23,9 +24,9 @@ class AuthController extends Controller
             'email'                 => 'required|email',
             'password'              => 'required|min:6|confirmed',
             'g-recaptcha-response'  => ['required', new Recaptcha()],
-             ], [
-        'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
-    ]);
+        ], [
+            'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
+        ]);
 
         if (User::where('email', $data['email'])->exists()) {
             return back()->withErrors(['email' => 'Email already registered']);
@@ -38,9 +39,11 @@ class AuthController extends Controller
             'role'     => 'admin', // self-registration is always a restaurant admin
         ]);
 
+        event(new Registered($user));
+
         Auth::login($user);
 
-        return redirect()->route('admin.dashboard');
+        return redirect()->route('verification.notice');
     }
 
     public function showLogin()
@@ -54,8 +57,8 @@ class AuthController extends Controller
             'email'                 => 'required|email',
             'password'              => 'required',
             'g-recaptcha-response'  => ['required', new Recaptcha()],
-            ], [
-        'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
+        ], [
+            'g-recaptcha-response.required' => 'Please verify that you are not a robot.',
         ]);
 
         $credentials = $request->only('email', 'password');

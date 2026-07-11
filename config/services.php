@@ -18,6 +18,13 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    'esewa' => [
+    'merchant_code' => env('ESEWA_MERCHANT_CODE'),
+    'secret_key' => env('ESEWA_SECRET_KEY'),
+    'payment_url' => env('ESEWA_PAYMENT_URL'),
+    'status_url' => env('ESEWA_STATUS_URL'),
+    ],
+
     'recaptcha' => [
     'site_key' => env('RECAPTCHA_SITE_KEY'),
     'secret_key' => env('RECAPTCHA_SECRET_KEY'),
