@@ -827,6 +827,45 @@
             margin: 25px 0 20px;
             color: #aaa;
         }
+        /* =========================================================
+   TOAST NOTIFICATION
+========================================================= */
+
+.toast-notify {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: .82rem;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    max-width: min(400px, calc(100% - 32px));
+}
+
+.toast-notify.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-notify.error {
+    background: #b3261e;
+}
+
+.toast-icon {
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
     </style>
 </head>
 
@@ -1683,7 +1722,41 @@
 
         }
 
+    /* ============================================================
+       TOAST NOTIFICATION
+       Replaces alert() for order feedback.
+    ============================================================ */
 
+    function showToast(message, type = 'success') {
+
+        const toast =
+            document.createElement('div');
+
+        toast.className =
+            `toast-notify ${type === 'error' ? 'error' : ''}`;
+
+        toast.innerHTML = `
+        <span class="toast-icon">${type === 'error' ? '⚠️' : '✅'}</span>
+        <span>${escapeHtml(message)}</span>
+    `;
+
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.classList.add('visible');
+        });
+
+        setTimeout(() => {
+
+            toast.classList.remove('visible');
+
+            setTimeout(() => {
+                toast.remove();
+            }, 250);
+
+        }, 2800);
+
+    }
         /* ============================================================
            ESCAPE HTML
         ============================================================ */
@@ -1714,9 +1787,7 @@
 
                 if (items.length === 0) {
 
-                    alert(
-                        'Please select at least one item.'
-                    );
+                    showToast('Please select at least one item.', 'error');
 
                     return;
 
@@ -1729,9 +1800,7 @@
 
                 if (!table) {
 
-                    alert(
-                        'Table number is missing.'
-                    );
+                    showToast('Table number is missing.', 'error');
 
                     return;
 
@@ -1817,9 +1886,7 @@
                         $('#orderModal').modal('hide');
 
 
-                        alert(
-                            'Order placed successfully!'
-                        );
+                        showToast('Order placed successfully!', 'success');
 
 
                         Object.keys(orderItems)
@@ -1850,10 +1917,7 @@
                         console.error(error);
 
 
-                        alert(
-                            error.message ||
-                            'Something went wrong while placing your order.'
-                        );
+                        showToast(error.message || 'Something went wrong while placing your order.', 'error');
 
                     })
 
