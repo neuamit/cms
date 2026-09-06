@@ -10,6 +10,6 @@ class TableRequest extends Model
     protected $collection = 'table_requests';
 
     protected $fillable = [
-        'restaurant_id', 'item_id', 'table_number', 'status', 'session_id',
+        'restaurant_id', 'item_id', 'table_number', 'status', 'session_id','quantity'
     ];
 }

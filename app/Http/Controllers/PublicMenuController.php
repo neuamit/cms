@@ -94,8 +94,17 @@ class PublicMenuController extends Controller
     public function notifyWaiter(Request $request, $slug, $itemId)
     {
         $restaurant = Restaurant::where('slug', $slug)->firstOrFail();
-        $item = Item::where('_id', $itemId)->where('restaurant_id', $restaurant->_id)->firstOrFail();
-        $tableNumber = $request->query('table');
+
+        $item = Item::where('_id', $itemId)
+            ->where('restaurant_id', $restaurant->_id)
+            ->firstOrFail();
+
+        $tableNumber = $request->input('table');
+
+        $quantity = max(
+            1,
+            (int) $request->input('quantity', 1)
+        );
 
         TableRequest::create([
             'restaurant_id' => $restaurant->_id,
@@ -103,18 +112,27 @@ class PublicMenuController extends Controller
             'table_number' => $tableNumber,
             'status' => 'pending',
             'session_id' => $request->session()->getId(),
+            'quantity' => $quantity,
         ]);
+        
+        //  Analytics
 
-        // This also strengthens Algorithm 1 (Trending) — order-intent is now a real signal,
-        // weighted 2x higher than a plain view in TrendingService's scoring formula.
         AnalyticsEvent::create([
             'restaurant_id' => $restaurant->_id,
             'item_id' => $item->_id,
             'session_id' => $request->session()->getId(),
             'event_type' => 'order',
         ]);
-        $item->increment('order_count');
 
-        return response()->json(['status' => 'ok']);
+       
+        // Trending order count
+  
+
+        $item->increment('order_count', $quantity);
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Order placed successfully.',
+        ]);
     }
 }

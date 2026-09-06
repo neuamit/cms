@@ -12,7 +12,7 @@ class Item extends Model
     protected $fillable = [
         'restaurant_id', 'category_id', 'name', 'description',
         'price', 'old_price', 'photo', 'tags', 'is_available',
-        'view_count', 'order_count', 'pricing_rules',
+        'view_count', 'order_count', 'pricing_rules','preparation_time'
     ];
 
     protected $casts = [

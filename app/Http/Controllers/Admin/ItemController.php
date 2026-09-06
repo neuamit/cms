@@ -28,6 +28,7 @@ class ItemController extends Controller
             'old_price'   => 'nullable|numeric|min:0',
             'photo'       => 'nullable|image|max:2048',
             'tags'        => 'nullable|string', // comma-separated, e.g. "veg,spicy"
+            'preparation_time' => 'nullable|string'
         ]);
 
         $restaurant = Restaurant::where('owner_id', auth()->id())->firstOrFail();
@@ -58,6 +59,7 @@ class ItemController extends Controller
             'photo'       => 'nullable|image|max:2048',
             'tags'        => 'nullable|string',
             'is_available' => 'nullable|boolean',
+            'preparation_time' => 'nullable|string'
         ]);
 
         if ($request->hasFile('photo')) {
