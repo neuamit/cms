@@ -6,6 +6,7 @@ use App\Models\AnalyticsEvent;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Restaurant;
+use App\Models\TableRequest;
 use Illuminate\Http\Request;
 use App\Services\TrendingService;
 use App\Services\MenuSearchService;
@@ -86,6 +87,33 @@ class PublicMenuController extends Controller
         ]);
 
         $item->increment('view_count');
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    public function notifyWaiter(Request $request, $slug, $itemId)
+    {
+        $restaurant = Restaurant::where('slug', $slug)->firstOrFail();
+        $item = Item::where('_id', $itemId)->where('restaurant_id', $restaurant->_id)->firstOrFail();
+        $tableNumber = $request->query('table');
+
+        TableRequest::create([
+            'restaurant_id' => $restaurant->_id,
+            'item_id' => $item->_id,
+            'table_number' => $tableNumber,
+            'status' => 'pending',
+            'session_id' => $request->session()->getId(),
+        ]);
+
+        // This also strengthens Algorithm 1 (Trending) — order-intent is now a real signal,
+        // weighted 2x higher than a plain view in TrendingService's scoring formula.
+        AnalyticsEvent::create([
+            'restaurant_id' => $restaurant->_id,
+            'item_id' => $item->_id,
+            'session_id' => $request->session()->getId(),
+            'event_type' => 'order',
+        ]);
+        $item->increment('order_count');
 
         return response()->json(['status' => 'ok']);
     }

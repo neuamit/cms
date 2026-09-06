@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Khaja — Digital menus for restaurants in Nepal</title>
+<title>CafeHub — Digital menus for restaurants in Nepal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -176,7 +176,7 @@
 <body>
 
 <nav class="top wrap">
-    <div class="wordmark">Khaja<span>.</span></div>
+    <div class="wordmark">CafeHub<span>.</span></div>
     <div class="nav-links">
         <a href="{{ route('login') }}" class="btn btn-ghost">Log in</a>
         <a href="{{ route('register') }}" class="btn btn-solid">Start free trial</a>
@@ -311,7 +311,7 @@
 </div>
 
 <footer>
-    Built for restaurants in Nepal. &copy; {{ date('Y') }} Khaja.
+    Built for restaurants in Nepal. &copy; {{ date('Y') }} CafeHub.
 </footer>
 
 </body>

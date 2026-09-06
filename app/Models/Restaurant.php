@@ -11,7 +11,7 @@ class Restaurant extends Model
 
     protected $fillable = [
         'name', 'slug', 'address', 'phone', 'logo', 'cover_image',
-        'wifi_password', 'owner_id', 'is_active', 'opening_hours',
+        'wifi_password', 'owner_id', 'is_active', 'opening_hours', 'table_count',
         'facebook_url', 'instagram_url', 'tripadvisor_url',
         'trial_claimed', 'trial_ends_at', 'subscription_status',
         'subscription_plan', 'subscription_expires_at',

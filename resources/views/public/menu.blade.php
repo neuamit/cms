@@ -13,7 +13,6 @@
         body { background: #fafafa; margin: 0; padding-bottom: 40px; }
         .wrap { max-width: 560px; margin: 0 auto; background: #fff; min-height: 100vh; }
 
-        /* Cover banner */
         .cover-wrap { position: relative; }
         .cover-img { width: 100%; height: 180px; object-fit: cover; display: block; background: #ddd; }
         .lang-badge {
@@ -29,7 +28,6 @@
         }
         .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Info card */
         .info-card { text-align: center; padding: 46px 20px 14px; }
         .info-card h2 { font-weight: 700; margin: 0 0 6px; color: #1a1a1a; font-size: 1.4rem; }
         .info-card .meta { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
@@ -41,7 +39,6 @@
         }
         .hours-text { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
 
-        /* Category pills */
         .category-nav {
             position: sticky; top: 0; z-index: 50; background: #fff;
             white-space: nowrap; overflow-x: auto; padding: 12px 16px;
@@ -55,7 +52,6 @@
         }
         .category-pill.active, .category-pill:hover { background: var(--accent); color: #fff; }
 
-        /* Search */
         .search-wrap { padding: 14px 16px 0; }
         .search-wrap .input-group { border-radius: 30px; overflow: hidden; background: #f2f2f2; }
         .search-wrap input {
@@ -69,7 +65,6 @@
 
         .section-title { font-weight: 700; font-size: 1.05rem; margin: 22px 16px 10px; color: #1a1a1a; }
 
-        /* Item rows */
         .item-row { display: flex; padding: 12px 16px; border-bottom: 1px solid #f2f2f2; cursor: pointer; }
         .item-row img { width: 76px; height: 76px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
         .item-row .item-info { padding-left: 12px; flex-grow: 1; min-width: 0; }
@@ -82,7 +77,6 @@
         .old-price { text-decoration: line-through; color: #bbb; font-size: 0.75rem; margin-left: 6px; }
         .badge-tag { background: #f0ede3; color: var(--gold); font-weight: 500; margin-right: 4px; font-size: 0.68rem; }
 
-        /* Trending strip */
         .trending-strip { display: flex; overflow-x: auto; padding: 4px 16px 12px; gap: 10px; }
         .trending-strip::-webkit-scrollbar { display: none; }
         .trending-card {
@@ -93,7 +87,6 @@
         .trending-card .tc-body { padding: 8px; }
         .trending-card h6 { font-size: 0.8rem; font-weight: 600; margin: 0 0 3px; }
 
-        /* Inline detail panel */
         .detail-panel {
             background: #faf8f2; margin: 0 16px 8px; padding: 12px 14px;
             border-radius: 10px; border: 1px dashed #e6dcc0;
@@ -104,6 +97,20 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer;
         }
         .rec-card strong { display: block; font-size: 0.82rem; }
+
+        .notify-btn {
+            background: var(--accent); color: #fff; border: none; border-radius: 20px;
+            padding: 7px 16px; font-size: 0.78rem; font-weight: 600; margin-bottom: 10px;
+        }
+        .notify-btn:active { opacity: 0.85; }
+        .order-hint {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #fff8ec; border: 1px solid #f0dfb8; border-radius: 12px;
+    padding: 12px 14px; margin: 0 16px 16px;
+}
+.order-hint-icon { font-size: 1.3rem; line-height: 1; }
+.order-hint strong { font-size: 0.85rem; color: #1a1a1a; display: block; margin-bottom: 2px; }
+.order-hint p { font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -153,7 +160,14 @@
         @endforeach
     </div>
     @endif
-
+<div class="order-hint" id="orderHint">
+    <span class="order-hint-icon">👆</span>
+    <div>
+        <strong>Tap any dish to order</strong>
+        <p>Open an item, hit "I'll have this," and your server will bring it right over.</p>
+    </div>
+    <button onclick="document.getElementById('orderHint').style.display='none'" style="background:none;border:none;color:#bbb;font-size:1.1rem;line-height:1;padding:0 4px;">&times;</button>
+</div>
     <div class="search-wrap">
         <div class="input-group">
             <input type="text" id="menuSearch" class="form-control" placeholder="Search dishes...">
@@ -179,6 +193,7 @@
     </div>
     @foreach($trendingItems as $item)
         <div id="detail-{{ $item->_id }}" class="detail-panel" style="display:none;">
+            <button class="notify-btn" onclick="event.stopPropagation(); notifyWaiter('{{ $item->_id }}', '{{ $restaurant->slug }}')">I'll have this</button>
             <h6>You might also like</h6>
             <div id="recs-{{ $item->_id }}" class="row"></div>
         </div>
@@ -211,6 +226,7 @@
                 </div>
             </div>
             <div id="detail-{{ $item->_id }}" class="detail-panel" style="display:none;">
+                <button class="notify-btn" onclick="event.stopPropagation(); notifyWaiter('{{ $item->_id }}', '{{ $restaurant->slug }}')">I'll have this</button>
                 <h6>You might also like</h6>
                 <div id="recs-{{ $item->_id }}" class="row"></div>
             </div>
@@ -265,6 +281,11 @@ if (searchInput) {
 
 let openItemId = null;
 
+function getTableFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('table') || '';
+}
+
 function toggleItem(itemId, slug) {
     const panel = document.getElementById(`detail-${itemId}`);
     if (!panel) return;
@@ -306,6 +327,14 @@ function toggleItem(itemId, slug) {
                 `).join('');
             recBox.dataset.loaded = 'true';
         });
+}
+
+function notifyWaiter(itemId, slug) {
+    const table = getTableFromUrl();
+    fetch(`/menu/${slug}/item/${itemId}/notify?table=${encodeURIComponent(table)}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+    }).then(() => alert("Waiter notified! They'll bring this to your table shortly."));
 }
 </script>
 </body>

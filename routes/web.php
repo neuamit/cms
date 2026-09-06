@@ -13,6 +13,8 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\SuperAdmin\PaymentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\TableRequestController;
+use App\Http\Controllers\Admin\BillController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -28,6 +30,7 @@ Route::get('/menu/{slug}', [PublicMenuController::class, 'show'])->name('menu.sh
 Route::get('/menu/{slug}/search', [PublicMenuController::class, 'search'])->name('menu.search');
 Route::post('/menu/{slug}/item/{itemId}/view', [PublicMenuController::class, 'trackView'])->name('menu.item.view');
 Route::get('/menu/{slug}/item/{itemId}/recommendations', [PublicMenuController::class, 'recommendations'])->name('menu.item.recommendations');
+Route::post('/menu/{slug}/item/{itemId}/notify', [PublicMenuController::class, 'notifyWaiter'])->name('menu.item.notify');
 
 Route::middleware('auth')->group(function () {
 
@@ -58,6 +61,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/subscription', [SubscriptionController::class, 'show'])->name('subscription.show');
         Route::post('/subscription/claim-trial', [SubscriptionController::class, 'claimTrial'])->name('subscription.claim-trial');
         Route::post('/subscription/initiate', [SubscriptionController::class, 'initiate'])->name('subscription.initiate');
+
+        Route::get('/table-requests', [TableRequestController::class, 'index'])->name('table-requests.index');
+        Route::post('/table-requests/{id}/acknowledge', [TableRequestController::class, 'acknowledge'])->name('table-requests.acknowledge');    
+
+        Route::get('/bills', [BillController::class, 'index'])->name('bills.index');
+        Route::get('/bills/table/{tableNumber}', [BillController::class, 'show'])->name('bills.show');
+        Route::post('/bills/{billId}/add-item', [BillController::class, 'addItem'])->name('bills.add-item');
+        Route::delete('/bills/{billId}/remove-item/{itemId}', [BillController::class, 'removeItem'])->name('bills.remove-item');
+        Route::put('/bills/{billId}/update-quantity/{itemId}', [BillController::class, 'updateQuantity'])->name('bills.update-quantity');
+        Route::post('/bills/{billId}/mark-paid', [BillController::class, 'markPaid'])->name('bills.mark-paid');
+        Route::get('/bills/history', [BillController::class, 'history'])->name('bills.history');
+        Route::post('/bills/{billId}/reopen', [BillController::class, 'reopen'])->name('bills.reopen');
     });
 
     Route::middleware('role:super_admin')->prefix('super-admin')->name('superadmin.')->group(function () {

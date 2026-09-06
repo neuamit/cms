@@ -50,7 +50,53 @@
             </div>
         </div>
     </div>
+<div class="row">
+    <div class="col-md-3 col-6">
+        <div class="small-box bg-success">
+            <div class="inner"><h3>Rs. {{ number_format($salesToday) }}</h3><p>Sales Today</p></div>
+            <div class="icon"><i class="fas fa-coins"></i></div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="small-box bg-info">
+            <div class="inner"><h3>Rs. {{ number_format($salesThisWeek) }}</h3><p>Sales This Week</p></div>
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{{ route('admin.bills.index') }}" style="text-decoration:none;">
+            <div class="small-box bg-warning">
+                <div class="inner"><h3>{{ $openBillsCount }}</h3><p>Open Bills (Tables)</p></div>
+                <div class="icon"><i class="fas fa-receipt"></i></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3 col-6">
+        <a href="{{ route('admin.table-requests.index') }}" style="text-decoration:none;">
+            <div class="small-box {{ $pendingRequests > 0 ? 'bg-danger' : 'bg-secondary' }}">
+                <div class="inner"><h3>{{ $pendingRequests }}</h3><p>Pending Requests</p></div>
+                <div class="icon"><i class="fas fa-bell"></i></div>
+            </div>
+        </a>
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body d-flex justify-content-around text-center">
+                <div>
+                    <h4 class="mb-0">{{ $billsClosedToday }}</h4>
+                    <small class="text-muted">Bills Closed Today</small>
+                </div>
+                <div>
+                    <h4 class="mb-0">Rs. {{ number_format($avgBillToday) }}</h4>
+                    <small class="text-muted">Average Bill Today</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -79,16 +125,30 @@
     </div>
 
     <div class="card">
-        <div class="card-body text-center">
-            <h6>Your Menu QR Code</h6>
-            @php $menuUrl = route('menu.show', $restaurant->slug); @endphp
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($menuUrl) }}" alt="QR Code">
-            <p class="mt-2"><a href="{{ $menuUrl }}" target="_blank">{{ $menuUrl }}</a></p>
-            <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={{ urlencode($menuUrl) }}"
-               download="menu-qr.png" class="btn btn-sm btn-secondary">Download QR (High-Res)</a>
-            <p class="mt-3"><a href="{{ route('admin.restaurant.edit') }}" class="btn btn-sm btn-outline-primary">Edit Restaurant Info</a></p>
+    <div class="card-body">
+        <h6>Table QR Codes</h6>
+        @if($restaurant->table_count > 0)
+        <div class="row">
+            @for($i = 1; $i <= $restaurant->table_count; $i++)
+                @php $tableUrl = route('menu.show', $restaurant->slug) . '?table=' . $i; @endphp
+                <div class="col-md-3 col-6 text-center mb-3">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($tableUrl) }}">
+                    <p class="mb-0"><strong>Table {{ $i }}</strong></p>
+                    <p class="mb-1">
+                        <a href="{{ $tableUrl }}" target="_blank" style="font-size: 0.75rem; word-break: break-all;">
+                            {{ $tableUrl }}
+                        </a>
+                    </p>
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={{ urlencode($tableUrl) }}"
+                       download="table-{{ $i }}-qr.png" class="btn btn-xs btn-outline-secondary">Download</a>
+                </div>
+            @endfor
         </div>
+        @else
+            <p class="text-muted">Set your number of tables in <a href="{{ route('admin.restaurant.edit') }}">restaurant settings</a> to generate table-specific QR codes.</p>
+        @endif
     </div>
+</div>
 
 @endif
 

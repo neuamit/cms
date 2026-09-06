@@ -20,6 +20,7 @@ class RestaurantController extends Controller
         $data = $request->validate([
             'name'             => 'required|string|max:255',
             'address'          => 'nullable|string|max:255',
+            'table_count'      => 'nullable|integer|min:0',
             'phone'            => 'nullable|string|max:20',
             'wifi_password'    => 'nullable|string|max:100',
             'opening_hours'    => 'nullable|string|max:100',

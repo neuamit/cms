@@ -9,13 +9,15 @@
                 <label>Restaurant Name</label>
                 <input type="text" name="name" class="form-control" value="{{ old('name', $restaurant->name ?? '') }}" required>
             </div>
+            <label>Number of Tables</label>
+    <input type="number" name="table_count" min="0" class="form-control" value="{{ old('table_count', $restaurant->table_count ?? 0) }}">
             <div class="form-group">
                 <label>Address</label>
                 <input type="text" name="address" class="form-control" value="{{ old('address', $restaurant->address ?? '') }}">
             </div>
             <div class="form-group">
                 <label>Phone</label>
-                <input type="text" name="phone" class="form-control" value="{{ old('phone', $restaurant->phone ?? '') }}">
+                <input type="number" name="phone" class="form-control" value="{{ old('phone', $restaurant->phone ?? '') }}">
             </div>
             <div class="form-group">
                 <label>WiFi Password</label>
@@ -36,8 +38,21 @@
     @endif
 </div>
 <div class="form-group">
-    <label>Opening Hours (e.g. "Open daily from 7:00 AM")</label>
-    <input type="text" name="opening_hours" class="form-control" value="{{ old('opening_hours', $restaurant->opening_hours ?? '') }}">
+    <label>Opening Hours</label>
+    <div class="row">
+        <div class="col-6">
+            <label class="small text-muted">Opens at</label>
+            <input type="time" id="openTime" class="form-control">
+        </div>
+        <div class="col-6">
+            <label class="small text-muted">Closes at</label>
+            <input type="time" id="closeTime" class="form-control">
+        </div>
+    </div>
+    <input type="hidden" name="opening_hours" id="openingHoursField" value="{{ old('opening_hours', $restaurant->opening_hours ?? '') }}">
+    <p class="small text-muted mt-1" id="openingHoursPreview">
+        {{ $restaurant->opening_hours ?? 'Pick a start and end time above' }}
+    </p>
 </div>
 <div class="form-group">
     <label>Facebook URL</label>
@@ -55,4 +70,30 @@
         </form>
     </div>
 </div>
+
+<script>
+    function formatTime12hr(timeStr) {
+        if (!timeStr) return '';
+        let [hour, minute] = timeStr.split(':').map(Number);
+        const period = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12 || 12;
+        return `${hour}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
+    function updateOpeningHours() {
+        const open = document.getElementById('openTime').value;
+        const close = document.getElementById('closeTime').value;
+        const field = document.getElementById('openingHoursField');
+        const preview = document.getElementById('openingHoursPreview');
+
+        if (open && close) {
+            const text = `Open daily from ${formatTime12hr(open)} to ${formatTime12hr(close)}`;
+            field.value = text;
+            preview.textContent = text;
+        }
+    }
+
+    document.getElementById('openTime').addEventListener('change', updateOpeningHours);
+    document.getElementById('closeTime').addEventListener('change', updateOpeningHours);
+</script>
 @endsection

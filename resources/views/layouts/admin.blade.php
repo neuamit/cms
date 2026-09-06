@@ -41,6 +41,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
+    <a href="{{ route('admin.table-requests.index') }}" class="nav-link {{ request()->routeIs('admin.table-requests.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-bell"></i><p>Table Requests</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{{ route('admin.bills.index') }}" class="nav-link {{ request()->routeIs('admin.bills.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-receipt"></i><p>Billing</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{{ route('admin.bills.history') }}" class="nav-link {{ request()->routeIs('admin.bills.history') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-history"></i><p>Bill History</p>
+    </a>
+</li>
+                        <li class="nav-item">
                             <a href="{{ route('admin.restaurant.edit') }}" class="nav-link {{ request()->routeIs('admin.restaurant.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-store"></i><p>My Restaurant</p>
                             </a>
