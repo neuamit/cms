@@ -2,23 +2,25 @@
 
 namespace App\Services;
 
+use App\Models\PricingPlan;
 use Illuminate\Support\Facades\Http;
 
 class SubscriptionService
 {
-    protected array $plans = [
-        'monthly' => ['label' => 'Monthly', 'amount' => 999,  'months' => 1],
-        'yearly'  => ['label' => 'Yearly',  'amount' => 9999, 'months' => 12],
-    ];
-
     public function getPlan(string $plan): ?array
     {
-        return $this->plans[$plan] ?? null;
+        $record = PricingPlan::where('key', $plan)->first();
+        return $record ? $this->toArray($record) : null;
     }
 
     public function allPlans(): array
     {
-        return $this->plans;
+        return PricingPlan::all()->mapWithKeys(fn($p) => [$p->key => $this->toArray($p)])->toArray();
+    }
+
+    private function toArray(PricingPlan $plan): array
+    {
+        return ['label' => $plan->label, 'amount' => $plan->amount, 'months' => $plan->months];
     }
 
     public function buildPaymentPayload(string $plan, string $transactionUuid): array
