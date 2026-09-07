@@ -106,15 +106,29 @@ class PublicMenuController extends Controller
             (int) $request->input('quantity', 1)
         );
 
-        TableRequest::create([
-            'restaurant_id' => $restaurant->_id,
-            'item_id' => $item->_id,
-            'table_number' => $tableNumber,
-            'status' => 'pending',
-            'session_id' => $request->session()->getId(),
-            'quantity' => $quantity,
-        ]);
-        
+        $existingRequest = TableRequest::where('restaurant_id', $restaurant->_id)
+            ->where('item_id', $item->_id)
+            ->where('table_number', $tableNumber)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingRequest) {
+
+            $existingRequest->increment('quantity', $quantity);
+
+        } else {
+
+            TableRequest::create([
+                'restaurant_id' => $restaurant->_id,
+                'item_id' => $item->_id,
+                'table_number' => $tableNumber,
+                'status' => 'pending',
+                'session_id' => $request->session()->getId(),
+                'quantity' => $quantity,
+            ]);
+
+        }
+
         //  Analytics
 
         AnalyticsEvent::create([
@@ -124,9 +138,9 @@ class PublicMenuController extends Controller
             'event_type' => 'order',
         ]);
 
-       
+
         // Trending order count
-  
+
 
         $item->increment('order_count', $quantity);
 

@@ -827,45 +827,80 @@
             margin: 25px 0 20px;
             color: #aaa;
         }
+
         /* =========================================================
-   TOAST NOTIFICATION
-========================================================= */
+           TOAST NOTIFICATION
+        ========================================================= */
 
-.toast-notify {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-20px);
-    background: var(--accent);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: .82rem;
-    font-weight: 600;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transition: opacity .25s, transform .25s;
-    max-width: min(400px, calc(100% - 32px));
-}
+        .toast-notify {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--accent);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: .82rem;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity .25s, transform .25s;
+            max-width: min(400px, calc(100% - 32px));
+        }
 
-.toast-notify.visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+        .toast-notify.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
 
-.toast-notify.error {
-    background: #b3261e;
-}
+        .toast-notify.error {
+            background: #b3261e;
+        }
 
-.toast-icon {
-    font-size: 1rem;
-    line-height: 1;
-    flex-shrink: 0;
-}
+        .toast-icon {
+            font-size: 1rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        /* =========================================================
+           ARRIVAL ESTIMATE POPUP
+        ========================================================= */
+
+        .arrival-estimate {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff9ed;
+            border: 1px solid #f0dfb8;
+            border-radius: 13px;
+            padding: 14px;
+        }
+
+        .arrival-icon {
+            font-size: 1.7rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .arrival-estimate strong {
+            display: block;
+            font-size: .85rem;
+            color: #222;
+            margin-bottom: 3px;
+        }
+
+        .arrival-estimate p {
+            font-size: .72rem;
+            color: var(--muted);
+            margin: 0;
+            line-height: 1.4;
+        }
     </style>
 </head>
 
@@ -942,10 +977,10 @@
             </div>
 
             @if(
-    $restaurant->facebook_url ||
-    $restaurant->instagram_url ||
-    $restaurant->tripadvisor_url
-)
+                    $restaurant->facebook_url ||
+                    $restaurant->instagram_url ||
+                    $restaurant->tripadvisor_url
+                )
 
                 <div class="social-row">
 
@@ -1134,7 +1169,7 @@
         @foreach($categories as $cat)
 
             @php
-    $catItems = $items[(string) $cat->_id] ?? collect();
+                $catItems = $items[(string) $cat->_id] ?? collect();
             @endphp
 
             @if($catItems->count())
@@ -1237,7 +1272,8 @@
                                 <div class="quantity-control" onclick="event.stopPropagation()">
 
                                     <button type="button" class="qty-btn" data-item-id="{{ $item->_id }}" data-change="-1"
-                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}">
+                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}"
+                                        data-prep-time="{{ $item->preparation_time ?? '' }}">
 
                                         −
 
@@ -1252,7 +1288,8 @@
 
 
                                     <button type="button" class="qty-btn" data-item-id="{{ $item->_id }}" data-change="1"
-                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}">
+                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}"
+                                        data-prep-time="{{ $item->preparation_time ?? '' }}">
 
                                         +
 
@@ -1291,7 +1328,8 @@
                                 <div class="quantity-control detail-quantity" onclick="event.stopPropagation()">
 
                                     <button type="button" class="qty-btn" data-item-id="{{ $item->_id }}" data-change="-1"
-                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}">
+                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}"
+                                        data-prep-time="{{ $item->preparation_time ?? '' }}">
 
                                         −
 
@@ -1306,7 +1344,8 @@
 
 
                                     <button type="button" class="qty-btn" data-item-id="{{ $item->_id }}" data-change="1"
-                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}">
+                                        data-price="{{ $item->price }}" data-name="{{ $item->name }}"
+                                        data-prep-time="{{ $item->preparation_time ?? '' }}">
 
                                         +
 
@@ -1432,6 +1471,78 @@
 
 
         {{-- =========================================================
+        ARRIVAL ESTIMATE MODAL
+        ========================================================== --}}
+
+        <div class="modal fade" id="arrivalModal" tabindex="-1">
+
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">
+                            Order Confirmed 🎉
+                        </h5>
+
+                        <button type="button" class="close" data-dismiss="modal">
+
+                            <span>
+                                &times;
+                            </span>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="modal-body">
+
+                        <div class="arrival-estimate">
+
+                            <span class="arrival-icon">
+                                ⏱
+                            </span>
+
+                            <div>
+
+                                <strong id="arrivalTimeText">
+                                    Estimated arrival: ~15 min
+                                </strong>
+
+                                <p>
+                                    Sit back and relax — your order is being prepared.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <p class="detail-section-label" style="margin-top:18px;">
+                            While you wait, you might like
+                        </p>
+
+
+                        <div id="arrivalRecs" class="rec-grid">
+
+                            <p class="no-recommendations">
+                                Loading suggestions...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- =========================================================
         FOOTER
         ========================================================== --}}
 
@@ -1464,6 +1575,10 @@
            item name/price directly into an inline onclick call. This
            avoids breaking the JS (and every handler on the page) when
            a dish name or price contains a quote character.
+
+           Registered with `true` (capture phase) so it still fires
+           even though the quantity-control wrapper calls
+           event.stopPropagation() during the bubble phase.
         ============================================================ */
 
         document.addEventListener('click', function (event) {
@@ -1478,7 +1593,8 @@
                 btn.dataset.itemId,
                 Number(btn.dataset.change),
                 btn.dataset.price,
-                btn.dataset.name
+                btn.dataset.name,
+                btn.dataset.prepTime
             );
 
         }, true);
@@ -1504,7 +1620,7 @@
            ONE SOURCE OF TRUTH
         ============================================================ */
 
-        function changeQuantity(itemId, change, price, name) {
+        function changeQuantity(itemId, change, price, name, prepTime) {
 
             if (!orderItems[itemId]) {
 
@@ -1512,6 +1628,7 @@
                     id: itemId,
                     name: name,
                     price: Number(price),
+                    prepTime: Number(prepTime) || null,
                     quantity: 0
                 };
 
@@ -1722,41 +1839,160 @@
 
         }
 
-    /* ============================================================
-       TOAST NOTIFICATION
-       Replaces alert() for order feedback.
-    ============================================================ */
 
-    function showToast(message, type = 'success') {
+        /* ============================================================
+           TOAST NOTIFICATION
+           Replaces alert() for order feedback.
+        ============================================================ */
 
-        const toast =
-            document.createElement('div');
+        function showToast(message, type = 'success') {
 
-        toast.className =
-            `toast-notify ${type === 'error' ? 'error' : ''}`;
+            const toast =
+                document.createElement('div');
 
-        toast.innerHTML = `
-        <span class="toast-icon">${type === 'error' ? '⚠️' : '✅'}</span>
-        <span>${escapeHtml(message)}</span>
-    `;
+            toast.className =
+                `toast-notify ${type === 'error' ? 'error' : ''}`;
 
-        document.body.appendChild(toast);
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'error' ? '⚠️' : '✅'}</span>
+                <span>${escapeHtml(message)}</span>
+            `;
 
-        requestAnimationFrame(() => {
-            toast.classList.add('visible');
-        });
+            document.body.appendChild(toast);
 
-        setTimeout(() => {
-
-            toast.classList.remove('visible');
+            requestAnimationFrame(() => {
+                toast.classList.add('visible');
+            });
 
             setTimeout(() => {
-                toast.remove();
-            }, 250);
 
-        }, 2800);
+                toast.classList.remove('visible');
 
-    }
+                setTimeout(() => {
+                    toast.remove();
+                }, 250);
+
+            }, 2800);
+
+        }
+
+
+        /* ============================================================
+           ARRIVAL ESTIMATE POPUP
+           Shown after a successful order — estimates wait time from
+           the slowest item's preparation_time and shows recommendations
+           based on the first ordered item.
+        ============================================================ */
+
+        function showArrivalPopup(items) {
+
+            const prepTimes = items
+                .map(item => Number(item.prepTime))
+                .filter(time => !isNaN(time) && time > 0);
+
+            const estimate =
+                prepTimes.length > 0
+                    ? Math.max(...prepTimes)
+                    : 15;
+
+            document.getElementById('arrivalTimeText').textContent =
+                `Estimated arrival: ~${estimate} min`;
+
+            $('#arrivalModal').modal('show');
+
+            loadArrivalRecommendations(items[0].id);
+
+        }
+
+
+        function loadArrivalRecommendations(itemId) {
+
+            const recBox =
+                document.getElementById('arrivalRecs');
+
+            if (!recBox) {
+                return;
+            }
+
+            recBox.innerHTML = `
+                <p class="no-recommendations">
+                    Loading suggestions...
+                </p>
+            `;
+
+            fetch(
+                `/menu/{{ $restaurant->slug }}/item/${itemId}/recommendations`
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load recommendations');
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(data => {
+
+                    if (!data || data.length === 0) {
+
+                        recBox.innerHTML = `
+                            <p class="no-recommendations">
+                                No suggestions yet.
+                            </p>
+                        `;
+
+                        return;
+
+                    }
+
+                    recBox.innerHTML =
+                        data.map(item => `
+
+                            <div
+                                class="rec-card"
+                                onclick="event.stopPropagation(); $('#arrivalModal').modal('hide'); openMenuItem('${item.id}')">
+
+                                <strong>
+                                    ${escapeHtml(item.name)}
+                                </strong>
+
+                                <span class="rec-price">
+                                    Rs. ${Number(item.price).toFixed(2)}
+                                </span>
+
+                                ${item.preparation_time
+                                ? `
+                                            <span class="rec-time">
+                                                ⏱ ${item.preparation_time} min
+                                            </span>
+                                          `
+                                : ''
+                            }
+
+                            </div>
+
+                        `).join('');
+
+                })
+
+                .catch(error => {
+
+                    console.error('Arrival recommendation error:', error);
+
+                    recBox.innerHTML = `
+                        <p class="no-recommendations">
+                            Unable to load suggestions.
+                        </p>
+                    `;
+
+                });
+
+        }
+
+
         /* ============================================================
            ESCAPE HTML
         ============================================================ */
@@ -1774,163 +2010,170 @@
 
 
         /* ============================================================
-       SUBMIT ORDER
-       No single "place whole order" endpoint exists — each cart
-       item is sent individually to the notify-waiter endpoint.
-    ============================================================ */
+           SUBMIT ORDER
+           No single "place whole order" endpoint exists — each cart
+           item is sent individually to the notify-waiter endpoint.
+        ============================================================ */
 
-            function submitOrder() {
+        function submitOrder() {
 
-                const items =
-                    Object.values(orderItems);
-
-
-                if (items.length === 0) {
-
-                    showToast('Please select at least one item.', 'error');
-
-                    return;
-
-                }
+            const items =
+                Object.values(orderItems);
 
 
-                const table =
-                    getTableFromUrl();
+            if (items.length === 0) {
+
+                showToast('Please select at least one item.', 'error');
+
+                return;
+
+            }
 
 
-                if (!table) {
-
-                    showToast('Table number is missing.', 'error');
-
-                    return;
-
-                }
+            const table =
+                getTableFromUrl();
 
 
-                const confirmButton =
-                    document.querySelector(
-                        '.confirm-order-btn'
-                    );
+            if (!table) {
+
+                showToast('Table number is missing.', 'error');
+
+                return;
+
+            }
 
 
-                if (confirmButton.disabled) {
-                    return;
-                }
-
-
-                confirmButton.disabled = true;
-
-                confirmButton.textContent =
-                    'Placing Order...';
-
-
-                const requests = items.map(item =>
-
-                    fetch(
-                        `/menu/{{ $restaurant->slug }}/item/${item.id}/notify`,
-                        {
-
-                            method: 'POST',
-
-                            headers: {
-
-                                'Content-Type':
-                                    'application/json',
-
-                                'X-CSRF-TOKEN':
-                                    '{{ csrf_token() }}',
-
-                                'Accept':
-                                    'application/json'
-
-                            },
-
-                            body: JSON.stringify({
-
-                                table: table,
-
-                                quantity: item.quantity
-
-                            })
-
-                        }
-                    )
-
-                        .then(async response => {
-
-                            const data =
-                                await response.json();
-
-
-                            if (!response.ok) {
-
-                                throw new Error(
-                                    data.message ||
-                                    `Failed to notify for ${item.name}.`
-                                );
-
-                            }
-
-
-                            return data;
-
-                        })
-
+            const confirmButton =
+                document.querySelector(
+                    '.confirm-order-btn'
                 );
 
 
-                Promise.all(requests)
-
-                    .then(() => {
-
-                        $('#orderModal').modal('hide');
-
-
-                        showToast('Order placed successfully!', 'success');
-
-
-                        Object.keys(orderItems)
-                            .forEach(itemId => {
-
-                                updateQuantityDisplays(
-                                    itemId,
-                                    0
-                                );
-
-                            });
-
-
-                        Object.keys(orderItems)
-                            .forEach(itemId => {
-
-                                delete orderItems[itemId];
-
-                            });
-
-
-                        updateOrderSummary();
-
-                    })
-
-                    .catch(error => {
-
-                        console.error(error);
-
-
-                        showToast(error.message || 'Something went wrong while placing your order.', 'error');
-
-                    })
-
-                    .finally(() => {
-
-                        confirmButton.disabled = false;
-
-                        confirmButton.textContent =
-                            'Confirm Order';
-
-                    });
-
+            if (confirmButton.disabled) {
+                return;
             }
+
+
+            confirmButton.disabled = true;
+
+            confirmButton.textContent =
+                'Placing Order...';
+
+
+            const requests = items.map(item =>
+
+                fetch(
+                    `/menu/{{ $restaurant->slug }}/item/${item.id}/notify`,
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json',
+
+                            'X-CSRF-TOKEN':
+                                '{{ csrf_token() }}',
+
+                            'Accept':
+                                'application/json'
+
+                        },
+
+                        body: JSON.stringify({
+
+                            table: table,
+
+                            quantity: item.quantity
+
+                        })
+
+                    }
+                )
+
+                    .then(async response => {
+
+                        const data =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                data.message ||
+                                `Failed to notify for ${item.name}.`
+                            );
+
+                        }
+
+
+                        return data;
+
+                    })
+
+            );
+
+
+            Promise.all(requests)
+
+                .then(() => {
+
+                    $('#orderModal').modal('hide');
+
+
+                    showToast('Order placed successfully!', 'success');
+
+
+                    showArrivalPopup(items);
+
+
+                    Object.keys(orderItems)
+                        .forEach(itemId => {
+
+                            updateQuantityDisplays(
+                                itemId,
+                                0
+                            );
+
+                        });
+
+
+                    Object.keys(orderItems)
+                        .forEach(itemId => {
+
+                            delete orderItems[itemId];
+
+                        });
+
+
+                    updateOrderSummary();
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+
+                    showToast(
+                        error.message ||
+                        'Something went wrong while placing your order.',
+                        'error'
+                    );
+
+                })
+
+                .finally(() => {
+
+                    confirmButton.disabled = false;
+
+                    confirmButton.textContent =
+                        'Confirm Order';
+
+                });
+
+        }
 
 
         /* ============================================================
