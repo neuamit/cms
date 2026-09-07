@@ -64,6 +64,11 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+            if (Auth::user()->is_banned) {
+                Auth::logout();
+                return back()->withErrors(['email' => 'This account has been suspended. Contact support.']);
+            }
+
             $request->session()->regenerate();
 
             return Auth::user()->role === 'super_admin'

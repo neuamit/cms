@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'password',
         'role',
         'restaurant_id',
+        'is_banned',
     ];
 
     /**

@@ -41,37 +41,37 @@
                             </a>
                         </li>
                         <li class="nav-item">
-    <a href="{{ route('admin.table-requests.index') }}" class="nav-link {{ request()->routeIs('admin.table-requests.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-bell"></i><p>Table Requests</p>
-    </a>
-</li>
-<li class="nav-item">
-    <a href="{{ route('admin.bills.index') }}" class="nav-link {{ request()->routeIs('admin.bills.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-receipt"></i><p>Billing</p>
-    </a>
-</li>
-<li class="nav-item">
-    <a href="{{ route('admin.bills.history') }}" class="nav-link {{ request()->routeIs('admin.bills.history') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-history"></i><p>Bill History</p>
-    </a>
-</li>
+                            <a href="{{ route('admin.table-requests.index') }}" class="nav-link {{ request()->routeIs('admin.table-requests.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-bell"></i><p>Table Requests</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.bills.index') }}" class="nav-link {{ request()->routeIs('admin.bills.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-receipt"></i><p>Billing</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.bills.history') }}" class="nav-link {{ request()->routeIs('admin.bills.history') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-history"></i><p>Bill History</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.restaurant.edit') }}" class="nav-link {{ request()->routeIs('admin.restaurant.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-store"></i><p>My Restaurant</p>
                             </a>
                         </li>
                         <li class="nav-item">
-    <a href="{{ route('admin.subscription.show') }}" class="nav-link {{ request()->routeIs('admin.subscription.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-credit-card"></i><p>Subscription</p>
-    </a>
-</li>
+                            <a href="{{ route('admin.subscription.show') }}" class="nav-link {{ request()->routeIs('admin.subscription.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-credit-card"></i><p>Subscription</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.categories.index') }}" class="nav-link">
+                            <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-list"></i><p>Categories</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.items.index') }}" class="nav-link">
+                            <a href="{{ route('admin.items.index') }}" class="nav-link {{ request()->routeIs('admin.items.*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-utensils"></i><p>Menu Items</p>
                             </a>
                         </li>
@@ -87,10 +87,20 @@
                             </a>
                         </li>
                         <li class="nav-item">
-    <a href="{{ route('superadmin.payments') }}" class="nav-link {{ request()->routeIs('superadmin.payments') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-money-bill-wave"></i><p>Payments</p>
-    </a>
-</li>
+                            <a href="{{ route('superadmin.payments') }}" class="nav-link {{ request()->routeIs('superadmin.payments') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-money-bill-wave"></i><p>Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('superadmin.plans') }}" class="nav-link {{ request()->routeIs('superadmin.plans') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-tags"></i><p>Pricing Plans</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('superadmin.users') }}" class="nav-link {{ request()->routeIs('superadmin.users') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-users-cog"></i><p>User Management</p>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </nav>
@@ -98,6 +108,16 @@
     </aside>
 
     <div class="content-wrapper">
+        @if(session('impersonator_id'))
+        <div class="alert alert-warning m-3 d-flex justify-content-between align-items-center">
+            <span>⚠️ You're viewing as <strong>{{ auth()->user()->name }}</strong> (impersonation mode).</span>
+            <form method="POST" action="{{ route('stop-impersonating') }}">
+                @csrf
+                <button class="btn btn-sm btn-dark">Return to Super Admin</button>
+            </form>
+        </div>
+        @endif
+
         <div class="content-header">
             <div class="container-fluid">
                 <h1>@yield('title', 'Dashboard')</h1>

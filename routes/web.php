@@ -15,6 +15,8 @@ use App\Http\Controllers\SuperAdmin\PaymentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\TableRequestController;
 use App\Http\Controllers\Admin\BillController;
+use App\Http\Controllers\SuperAdmin\PlanController;
+use App\Http\Controllers\SuperAdmin\UserController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -34,6 +36,8 @@ Route::post('/menu/{slug}/item/{itemId}/notify', [PublicMenuController::class, '
 
 Route::middleware('auth')->group(function () {
 
+    Route::post('/stop-impersonating', [UserController::class, 'stopImpersonating'])->name('stop-impersonating');
+    
     Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
         ->middleware('signed')->name('verification.verify');
@@ -81,6 +85,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/restaurants/{id}', [SuperAdminRestaurantController::class, 'show'])->name('restaurants.show');
         Route::post('/restaurants/{id}/toggle', [SuperAdminRestaurantController::class, 'toggleActive'])->name('restaurants.toggle');
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments');
+        Route::get('/plans', [PlanController::class, 'index'])->name('plans');
+        Route::put('/plans/{id}', [PlanController::class, 'update'])->name('plans.update');
+        Route::get('/users', [UserController::class, 'index'])->name('users');
+        Route::post('/users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/users/{id}/toggle-ban', [UserController::class, 'toggleBan'])->name('users.toggle-ban');
+        Route::post('/users/{id}/impersonate', [UserController::class, 'impersonate'])->name('users.impersonate');
     });
 
 });
